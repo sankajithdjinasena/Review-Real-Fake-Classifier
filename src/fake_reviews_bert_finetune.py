@@ -1,5 +1,3 @@
-
-
 import argparse
 import os
 
@@ -15,12 +13,18 @@ from transformers import (
     TrainingArguments, Trainer, EarlyStoppingCallback
 )
 
+# AutoTokenizer → converts text into tokens
+# AutoModelForSequenceClassification → DistilBERT for classification
+# TrainingArguments → training configuration
+# Trainer → handles training
+# EarlyStoppingCallback → stops training when validation performance stops improving
+
 RANDOM_STATE = 42
 LABEL2ID = {"real": 0, "fake": 1}
 ID2LABEL = {0: "real", 1: "fake"}
 
 
-def load_and_split(path: str, sample: int = None):
+def load_and_split(path, sample):
     df = pd.read_csv(path)
     df = df.dropna(subset=["review_text", "label_clean"]).reset_index(drop=True)
 
@@ -30,7 +34,7 @@ def load_and_split(path: str, sample: int = None):
 
     df["label_id"] = df["label_clean"].map(LABEL2ID)
 
-    # 70% train / 15% val / 15% test, stratified
+    # 70% train / 15% val / 15% test, stratified → This keeps the class distribution approximately the same in each split.
     train_df, temp_df = train_test_split(
         df, test_size=0.3, random_state=RANDOM_STATE, stratify=df["label_id"]
     )
@@ -43,18 +47,10 @@ def load_and_split(path: str, sample: int = None):
 
 
 class ReviewDataset(torch.utils.data.Dataset):
-    """
-    Plain PyTorch Dataset — deliberately avoids the HuggingFace `datasets`
-    library's Arrow-based Dataset + torch formatter, which can crash with
-    an unrelated `torchvision.io.VideoReader` ImportError on some
-    torch/torchvision/datasets version combinations (a known environment
-    bug, not something caused by anything in this pipeline). Tokenizing
-    up front and returning plain tensors sidesteps that entirely.
-    """
 
     def __init__(self, texts, labels, tokenizer, max_length=256):
         self.encodings = tokenizer(
-            list(texts), truncation=True, padding="max_length",
+            list(texts), truncation=True, padding="max_length", # truncation - If a review is longer than 256 tokens it gets shortened to 256 tokens. Padding - If a review is shorter than 256 tokens it gets padded with zeros to reach 256 tokens.
             max_length=max_length, return_tensors="pt"
         )
         self.labels = torch.tensor(list(labels), dtype=torch.long)
@@ -99,7 +95,7 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Using device: {device}")
     if device == "cpu":
-        print("WARNING: No GPU detected. Fine-tuning on CPU will be very slow — "
+        print("WARNING: No GPU detected. Fine-tuning on CPU will be very slow - "
               "use --sample for a small test, or switch to a GPU runtime (Colab: Runtime > Change runtime type > GPU).")
 
     train_df, val_df, test_df = load_and_split(args.input, sample=args.sample)
@@ -118,14 +114,14 @@ def main():
     training_args = TrainingArguments(
         output_dir=args.output_dir,
         num_train_epochs=args.epochs,
-        per_device_train_batch_size=args.batch_size,
-        per_device_eval_batch_size=args.batch_size,
+        per_device_train_batch_size=args.batch_size, # How many reviews are processed together during training.
+        per_device_eval_batch_size=args.batch_size, # How many reviews are processed together during evaluation.
         eval_strategy="epoch",
         save_strategy="epoch",
         load_best_model_at_end=True,
-        metric_for_best_model="f1_fake",
+        metric_for_best_model="f1_fake", # Choose the model with the highest fake-review F1.
         greater_is_better=True,
-        logging_steps=50,
+        logging_steps=50, # The Trainer prints training information every 50 steps.
         report_to="none",  # disable wandb/etc auto-logging
         fp16=torch.cuda.is_available(),  # mixed precision if GPU available — faster, less memory
         save_total_limit=2,  # keep disk usage sane

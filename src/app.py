@@ -4,9 +4,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-# ----------------------------------------------------------------------
 # CONFIG
-# ----------------------------------------------------------------------
 DEFAULT_MODEL_DIR = "./bert_fake_reviews_model"  # change if your folder is elsewhere
 
 INK = "#12181C"
@@ -20,14 +18,11 @@ FLAGGED = "#E64980"
 SIGNAL = "#F4C95D"
 
 st.set_page_config(
-    page_title="Case File: Detecting Deception in Product Reviews",
+    page_title="Detecting Deception in Product Reviews",
     page_icon="🔎",
     layout="wide",
 )
-
-# ----------------------------------------------------------------------
-# THEME / CSS — matches the case-file aesthetic from the HTML dashboard
-# ----------------------------------------------------------------------
+# THEME / CSS - matches the case-file aesthetic from the HTML dashboard
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
@@ -94,10 +89,7 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-
-# ----------------------------------------------------------------------
 # MODEL LOADING (cached so it only loads once per session)
-# ----------------------------------------------------------------------
 @st.cache_resource(show_spinner=False)
 def load_model(model_dir: str):
     import torch
@@ -131,10 +123,7 @@ def predict(text: str, model, tokenizer, device, max_length: int = 256):
         "prob_fake": float(probs[1].item()),
     }
 
-
-# ----------------------------------------------------------------------
 # SIDEBAR
-# ----------------------------------------------------------------------
 with st.sidebar:
     st.markdown("### ⚙️ Model Settings")
     model_dir = st.text_input("Model folder path", value=DEFAULT_MODEL_DIR)
@@ -149,17 +138,14 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.caption("Capstone Project in Data Science II (DS3206) — Sabaragamuwa University of Sri Lanka")
+    st.caption("Capstone Project in Data Science II (DS3206) - Sabaragamuwa University of Sri Lanka")
 
-
-# ----------------------------------------------------------------------
 # PAGE: OVERVIEW
-# ----------------------------------------------------------------------
 if page == "Overview":
-    st.markdown('<div class="case-tag"><span class="dot"></span>CASE FILE — DS3206 CAPSTONE PROJECT</div>', unsafe_allow_html=True)
+    st.markdown('<div class="case-tag"><span class="dot"></span>CASE FILE - DS3206 CAPSTONE PROJECT</div>', unsafe_allow_html=True)
     st.title("Detecting deception in product reviews")
     st.markdown(
-        "A full investigation trail — from raw review data to a fine-tuned transformer — "
+        "A full investigation trail - from raw review data to a fine-tuned transformer - "
         "built to tell genuine customer reviews apart from AI-generated ones."
     )
 
@@ -172,12 +158,9 @@ if page == "Overview":
     st.markdown("")
     st.info("Use the sidebar to navigate between the EDA report, model comparison, results, and the live classifier demo.")
 
-
-# ----------------------------------------------------------------------
 # PAGE: THE DATASET
-# ----------------------------------------------------------------------
 elif page == "The Dataset":
-    st.markdown('<div class="case-tag"><span class="dot"></span>01 — THE DATASET</div>', unsafe_allow_html=True)
+    st.markdown('<div class="case-tag"><span class="dot"></span>01 - THE DATASET</div>', unsafe_allow_html=True)
     st.header("40,405 reviews, near-perfectly balanced")
     st.caption("10 product categories, real Amazon reviews vs. GPT-2-generated fakes.")
 
@@ -232,14 +215,12 @@ elif page == "The Dataset":
             barmode="group", legend=dict(font=dict(color=FOG)),
         )
         st.plotly_chart(fig, use_container_width=True)
-    st.caption("Rating is near-identical across both classes — not a useful standalone fake-detection signal.")
+    st.caption("Rating is near-identical across both classes - not a useful standalone fake-detection signal.")
 
 
-# ----------------------------------------------------------------------
 # PAGE: THE INVESTIGATION
-# ----------------------------------------------------------------------
 elif page == "The Investigation":
-    st.markdown('<div class="case-tag"><span class="dot"></span>02 — THE INVESTIGATION</div>', unsafe_allow_html=True)
+    st.markdown('<div class="case-tag"><span class="dot"></span>02 - THE INVESTIGATION</div>', unsafe_allow_html=True)
     st.header("Four leads pursued")
     st.caption("From simple hand-built features to a fine-tuned transformer, each tested fairly on the same held-out data.")
 
@@ -259,12 +240,9 @@ elif page == "The Investigation":
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
-# ----------------------------------------------------------------------
 # PAGE: THE VERDICT
-# ----------------------------------------------------------------------
 elif page == "The Verdict":
-    st.markdown('<div class="case-tag"><span class="dot"></span>03 — THE VERDICT</div>', unsafe_allow_html=True)
+    st.markdown('<div class="case-tag"><span class="dot"></span>03 - THE VERDICT</div>', unsafe_allow_html=True)
     st.header("DistilBERT, evaluated on 6,061 held-out reviews")
 
     col1, col2 = st.columns(2)
@@ -293,26 +271,26 @@ elif page == "The Verdict":
         m3.markdown(f'<div class="metric-card"><div class="val" style="color:{VERIFIED}">97.72%</div><div class="lbl">Precision (fake)</div></div>', unsafe_allow_html=True)
         m4.markdown(f'<div class="metric-card"><div class="val" style="color:{VERIFIED}">98.91%</div><div class="lbl">Recall (fake)</div></div>', unsafe_allow_html=True)
         st.markdown("")
-        st.caption("A ~8-point accuracy gain over the best classical model (fusion, 90.36%) — but likely inflated by GPT-2's comparatively easy-to-detect generation artifacts. See Case Notes.")
+        st.caption("A ~8-point accuracy gain over the best classical model (fusion, 90.36%) - but likely inflated by GPT-2's comparatively easy-to-detect generation artifacts. See Case Notes.")
 
 
 # ----------------------------------------------------------------------
 # PAGE: CASE NOTES
 # ----------------------------------------------------------------------
 elif page == "Case Notes":
-    st.markdown('<div class="case-tag"><span class="dot"></span>04 — CASE NOTES</div>', unsafe_allow_html=True)
+    st.markdown('<div class="case-tag"><span class="dot"></span>04 - CASE NOTES</div>', unsafe_allow_html=True)
     st.header("103 of 6,061 test reviews were misclassified")
-    st.caption("Reading the actual mistakes reveals what the model learned — and what fools it.")
+    st.caption("Reading the actual mistakes reveals what the model learned - and what fools it.")
 
     tab1, tab2 = st.tabs(["False Positives (70)", "False Negatives (33)"])
 
     false_positives = [
         ("I enjoyed the two stories contained in this book. These are the only books by these authors that I have read.",
-         "Short, blunt, factual — no personal elaboration. The model appears to associate brevity and genericness with AI generation, penalizing naturally terse human writers."),
+         "Short, blunt, factual - no personal elaboration. The model appears to associate brevity and genericness with AI generation, penalizing naturally terse human writers."),
         ("They fit perfect, they look expensive, they are the most comfortable shoes that i had ever. I love the design.",
          "Enthusiastic but generic praise, close to the kind of language GPT-2 tends to generate."),
         ("I have two of these, one for the kitchen and one for the dining room.",
-         "Minimal, matter-of-fact — the shortest kind of real review, easily confused with generic filler text."),
+         "Minimal, matter-of-fact - the shortest kind of real review, easily confused with generic filler text."),
         ("Not at all what I was expecting. This was a large box of plastic pieces that don't fit together. I'm sure the only way this toy would be usable is if you glued the pieces together.",
          "A genuine complaint, but structured plainly enough to read as generic negative filler."),
         ("Very comfortable, just a little short for my taste. I also have long legs, so that might be the issue.",
@@ -320,15 +298,15 @@ elif page == "Case Notes":
     ]
     false_negatives = [
         ("We used these with 3 of my 3 year old grandkids. They really enjoy playing with them.",
-         "Specific, human-sounding family detail — exactly the kind of anecdotal texture real reviews have."),
+         "Specific, human-sounding family detail - exactly the kind of anecdotal texture real reviews have."),
         ("Pros: Wash well. Laundry bag included, thicker than expected, great quality materials. Cons: Too small for my petite frame, I had to return it.",
-         "Mimics a genuine human review convention — structured pros/cons lists are common in real reviews, so the model reads structure as authenticity."),
+         "Mimics a genuine human review convention - structured pros/cons lists are common in real reviews, so the model reads structure as authenticity."),
         ("Received product at discount for honest review. Waking Up by Kirsten Clare. I am a huge fan of both Haus of Tars and The Blind Side.",
-         "Borrows a real, common Amazon disclosure phrase — a genuine trust signal the fake text co-opts convincingly."),
+         "Borrows a real, common Amazon disclosure phrase - a genuine trust signal the fake text co-opts convincingly."),
         ("Contains raw embedded HTML markup (a product link tag) rather than natural review prose.",
-         "Likely not a genuine model failure — this looks like a data leakage or scraping artifact mislabeled as 'fake' in the source dataset, worth flagging as a benchmark limitation rather than a model weakness."),
+         "Likely not a genuine model failure - this looks like a data leakage or scraping artifact mislabeled as 'fake' in the source dataset, worth flagging as a benchmark limitation rather than a model weakness."),
         ("SHEET COLOR IS NICE BUY FOR MY SIZE FOR MY TOWN.",
-         "Ungrammatical, broken English — the model likely treats imperfect fluency as a human tell, which a fake review can exploit by being deliberately unpolished."),
+         "Ungrammatical, broken English - the model likely treats imperfect fluency as a human tell, which a fake review can exploit by being deliberately unpolished."),
     ]
 
     with tab1:
@@ -356,7 +334,7 @@ elif page == "Case Notes":
 # PAGE: LIVE INTERROGATION
 # ----------------------------------------------------------------------
 elif page == "🔎 Live Interrogation":
-    st.markdown('<div class="case-tag"><span class="dot"></span>LIVE MODEL — DISTILBERT</div>', unsafe_allow_html=True)
+    st.markdown('<div class="case-tag"><span class="dot"></span>LIVE MODEL - DISTILBERT</div>', unsafe_allow_html=True)
     st.header("Try it yourself")
     st.caption("Paste a product review below. The fine-tuned model (98.3% test accuracy) will classify it live.")
 
@@ -366,7 +344,7 @@ elif page == "🔎 Live Interrogation":
     if model is None:
         st.error(
             f"Could not find a model at: `{model_dir}`\n\n"
-            "Check the path in the sidebar — it should point to the folder containing "
+            "Check the path in the sidebar - it should point to the folder containing "
             "`config.json`, `model.safetensors`, `tokenizer_config.json`, and `tokenizer.json`."
         )
     else:

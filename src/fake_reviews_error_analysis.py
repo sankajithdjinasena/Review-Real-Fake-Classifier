@@ -11,11 +11,6 @@ ID2LABEL = {0: "real", 1: "fake"}
 
 
 def load_test_split(path: str):
-    """
-    Recreates the EXACT same train/val/test split used during fine-tuning
-    (same random_state, same split ratios), so the test set here is
-    identical to what the model was evaluated on originally.
-    """
     df = pd.read_csv(path)
     df = df.dropna(subset=["review_text", "label_clean"]).reset_index(drop=True)
     df["label_id"] = df["label_clean"].map(LABEL2ID)
@@ -112,15 +107,6 @@ def main():
     print("=" * 70)
     for _, row in false_negatives.head(5).iterrows():
         print(f"\n[confidence={row['model_confidence']:.3f}] {row['review_text'][:300]}")
-
-    print(
-        "\nFor your report: read through misclassified_reviews.csv and look for "
-        "patterns — e.g. are false negatives unusually long/detailed fake reviews "
-        "that 'read' as human? Are false positives short, blunt real reviews that "
-        "resemble generic AI text? Quoting 2-3 representative examples (paraphrased, "
-        "not verbatim if publishing) with your interpretation is strong material for "
-        "Chapter 5's 'Limitations and potential biases' subsection."
-    )
 
 
 if __name__ == "__main__":

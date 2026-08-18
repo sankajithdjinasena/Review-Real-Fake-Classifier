@@ -35,10 +35,6 @@ Expected raw columns: `category`, `rating`, `label`, `text_`
 │   │   ├── fake_reviews_features_full.csv
 │   │   └── fake_reviews_merged.csv
 │   ├── eda_outputs/
-│   │   ├── category_distribution.png
-│   │   ├── class_balance.png
-│   │   ├── rating_by_label.png
-│   │   └── review_length_by_label.png
 │   └── misclassified_reviews.csv
 ├── src/
 │   ├── bert_fake_reviews_model/        # saved fine-tuned model
