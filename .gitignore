@@ -1,3 +1,5 @@
 bert_fake_reviews_model
 data/processed
 data/raw
+__pycache__
+fusion_model
