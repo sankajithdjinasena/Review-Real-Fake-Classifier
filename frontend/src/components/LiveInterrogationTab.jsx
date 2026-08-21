@@ -293,6 +293,9 @@ export default function LiveInterrogationTab({ health }) {
                     <ReferenceLine x={0} stroke="#8DA0A8" />
                     <Tooltip
                       contentStyle={{ backgroundColor: '#212B31', borderColor: '#2E3A41', color: '#E9EDEE', borderRadius: '8px' }}
+                      itemStyle={{ color: '#E9EDEE' }}
+                      labelStyle={{ color: '#8DA0A8', fontWeight: 600 }}
+                      cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
                       formatter={(val) => [val, 'Contribution']}
                     />
                     <Bar dataKey="shap_value" radius={[2, 2, 2, 2]}>

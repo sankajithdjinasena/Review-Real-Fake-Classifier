@@ -75,6 +75,8 @@ export default function DatasetTab({ data }) {
                 <Tooltip
                   contentStyle={{ backgroundColor: '#212B31', borderColor: '#2E3A41', color: '#E9EDEE', borderRadius: '8px' }}
                   itemStyle={{ color: '#E9EDEE' }}
+                  labelStyle={{ color: '#8DA0A8', fontWeight: 600 }}
+                  cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
                 />
                 <Legend formatter={(value) => <span className="text-[#8DA0A8] text-xs font-mono">{value}</span>} />
               </PieChart>
@@ -97,6 +99,9 @@ export default function DatasetTab({ data }) {
                 <YAxis stroke="#8DA0A8" tick={{ fill: '#8DA0A8', fontSize: 12 }} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#212B31', borderColor: '#2E3A41', color: '#E9EDEE', borderRadius: '8px' }}
+                  itemStyle={{ color: '#E9EDEE' }}
+                  labelStyle={{ color: '#8DA0A8', fontWeight: 600 }}
+                  cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
                 />
                 <Legend formatter={(value) => <span className="text-[#8DA0A8] text-xs font-mono">{value}</span>} />
                 <Bar dataKey="Real" fill="#5FD3A0" radius={[4, 4, 0, 0]} />
@@ -123,6 +128,9 @@ export default function DatasetTab({ data }) {
                 <YAxis dataKey="name" type="category" stroke="#8DA0A8" tick={{ fill: '#8DA0A8', fontSize: 11 }} width={110} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#212B31', borderColor: '#2E3A41', color: '#E9EDEE', borderRadius: '8px' }}
+                  itemStyle={{ color: '#E9EDEE' }}
+                  labelStyle={{ color: '#8DA0A8', fontWeight: 600 }}
+                  cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
                 />
                 <Bar dataKey="count" fill="#7BB6C9" radius={[0, 4, 4, 0]} />
               </BarChart>
@@ -142,6 +150,9 @@ export default function DatasetTab({ data }) {
                   <YAxis stroke="#8DA0A8" tick={{ fill: '#8DA0A8', fontSize: 11 }} />
                   <Tooltip
                     contentStyle={{ backgroundColor: '#212B31', borderColor: '#2E3A41', color: '#E9EDEE', borderRadius: '8px' }}
+                    itemStyle={{ color: '#E9EDEE' }}
+                    labelStyle={{ color: '#8DA0A8', fontWeight: 600 }}
+                    cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
                   />
                   <Legend formatter={(value) => <span className="text-[#8DA0A8] text-xs font-mono">{value}</span>} />
                   <Bar dataKey="Real" fill="#5FD3A0" radius={[4, 4, 0, 0]} />
