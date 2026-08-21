@@ -18,8 +18,8 @@ DEFAULT_FUSION_DIR = "./fusion_model"
 
 MODEL_CHOICES = [
     "DistilBERT (Transformer)",
-    "Fusion — Logistic Regression",
-    "Fusion — Linear SVM",
+    "Fusion - Logistic Regression",
+    "Fusion - Linear SVM",
 ]
 
 INK = "#12181C"
@@ -246,7 +246,7 @@ st.markdown(
 
 def render(html_str: str):
     """Render a raw HTML string. Never build multi-line HTML with
-    blank lines in it and pass it here — see the module docstring."""
+    blank lines in it and pass it here - see the module docstring."""
     st.markdown(html_str, unsafe_allow_html=True)
 
 
@@ -300,7 +300,7 @@ def shap_legend_box():
         f'<span class="shap-negative">Green bars</span> push it toward <b>REAL</b>.'
         '<br><br>'
         'This coloring is always the same regardless of what the model actually predicted for '
-        'this review, so pink always means "fake signal" and green always means "real signal" — '
+        'this review, so pink always means "fake signal" and green always means "real signal" - '
         'the same as everywhere else in this app.'
         '<br><br>'
         'Longer bars had a bigger effect on this specific prediction. This shows what the model '
@@ -344,10 +344,10 @@ def load_model(model_dir: str):
 
 @st.cache_resource(show_spinner=False)
 def load_fusion_artifacts_cached(model_dir: str):
-    """Thin cache_resource wrapper — fusion_inference.py itself has no
+    """Thin cache_resource wrapper - fusion_inference.py itself has no
     Streamlit dependency, same reasoning as create_shap_explainer()."""
     try:
-        import joblib  # noqa: F401 — surfaced here so the error is clear if missing
+        import joblib  # noqa: F401 - surfaced here so the error is clear if missing
         import sklearn  # noqa: F401
     except ImportError as e:
         st.error(
@@ -491,7 +491,7 @@ def show_shap_visualization(
 ):
     """Renders a word/feature contribution chart. Works for either the
     sampled SHAP values from DistilBERT or the exact linear contributions
-    from a fusion model — both are passed in as a DataFrame with columns
+    from a fusion model - both are passed in as a DataFrame with columns
     ["display_token", "shap_value"], positive = pushes toward FAKE."""
 
     if shap_df.empty:
@@ -577,7 +577,7 @@ with st.sidebar:
     st.caption(
         "Should contain tfidf_vectorizer.joblib, scaler.joblib, "
         "logistic_regression.joblib, linear_svm.joblib, metadata.json "
-        "— produced by running train_fusion_model.py."
+        "- produced by running train_fusion_model.py."
     )
 
     st.divider()
@@ -599,7 +599,7 @@ with st.sidebar:
 
     st.divider()
 
-    st.caption("Capstone Project in Data Science II (DS3206) - Sabaragamuwa University of Sri Lanka")
+    st.caption("Capstone Project in Data Science II (DS4105) - Sabaragamuwa University of Sri Lanka")
 
 
 # ============================================================
@@ -608,7 +608,7 @@ with st.sidebar:
 
 if page == "Overview":
 
-    case_tag("CASE FILE - DS3206 CAPSTONE PROJECT")
+    case_tag("CASE FILE - DS4105 CAPSTONE PROJECT")
 
     st.title("Detecting deception in product reviews")
 
@@ -997,7 +997,7 @@ elif page == "🔎 Live Interrogation":
                     explain_df = fusion_inference.explain_fusion(text, artifacts, which=fusion_which)
                     note = (
                         "Linear SVM values are averaged across the model's calibration "
-                        "folds — a close approximation, not an exact decomposition."
+                        "folds - a close approximation, not an exact decomposition."
                         if fusion_which == "svm"
                         else None
                     )

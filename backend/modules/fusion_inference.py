@@ -7,7 +7,11 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import hstack, csr_matrix
 
-from feature_engineering import ENGINEERED_COLS, extract_features_batch
+try:
+    from feature_engineering import ENGINEERED_COLS, extract_features_batch
+except ImportError:
+    from .feature_engineering import ENGINEERED_COLS, extract_features_batch
+
 
 REQUIRED_FILES = [
     "tfidf_vectorizer.joblib",

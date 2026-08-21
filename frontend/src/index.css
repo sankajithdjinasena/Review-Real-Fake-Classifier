@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Manrope', sans-serif;
+    background-color: #12181C;
+    color: #E9EDEE;
+  }
+
+  .font-mono {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1B2328;
+}
+::-webkit-scrollbar-thumb {
+  background: #2E3A41;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8DA0A8;
+}

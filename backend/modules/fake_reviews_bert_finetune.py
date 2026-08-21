@@ -123,7 +123,7 @@ def main():
         greater_is_better=True,
         logging_steps=50, # The Trainer prints training information every 50 steps.
         report_to="none",  # disable wandb/etc auto-logging
-        fp16=torch.cuda.is_available(),  # mixed precision if GPU available — faster, less memory
+        fp16=torch.cuda.is_available(),  # mixed precision if GPU available - faster, less memory
         save_total_limit=2,  # keep disk usage sane
     )
 

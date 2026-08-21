@@ -94,7 +94,7 @@ def main():
     misclassified[cols_to_save].to_csv(args.output_csv, index=False)
     print(f"\nAll misclassified reviews saved to: {args.output_csv}")
 
-    # Print the highest-confidence mistakes — these are the most interesting
+    # Print the highest-confidence mistakes - these are the most interesting
     # ones for discussion, since the model was CONFIDENTLY wrong.
     print("\n" + "=" * 70)
     print("  TOP 5 MOST CONFIDENT FALSE POSITIVES (real review flagged as fake)")
