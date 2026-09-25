@@ -66,7 +66,7 @@ export default function OverviewTab({ stats, setActiveTab }) {
           </div>
           <h3 className="text-lg font-bold text-[#E9EDEE]">Transformer Power</h3>
           <p className="text-sm text-[#8DA0A8] leading-relaxed">
-            DistilBERT fine-tuning delivers an outstanding 98.30% accuracy, detecting subtle GPT-2 generation signatures across 10 Amazon categories.
+            DistilBERT fine-tuning delivers an outstanding 98.05% accuracy, detecting subtle GPT-2 generation signatures across 10 Amazon categories.
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export default function OverviewTab({ stats, setActiveTab }) {
           </div>
           <h3 className="text-lg font-bold text-[#E9EDEE]">Hybrid Fusion Approach</h3>
           <p className="text-sm text-[#8DA0A8] leading-relaxed">
-            Combines 100k TF-IDF n-grams with 10 hand-engineered linguistic signals (lexical diversity, punctuation ratios, sentiment scores) reaching 90.36% accuracy.
+            Combines 100k TF-IDF n-grams with 10 hand-engineered linguistic signals (lexical diversity, punctuation ratios, sentiment scores) reaching 90.89% accuracy.
           </p>
         </div>
 

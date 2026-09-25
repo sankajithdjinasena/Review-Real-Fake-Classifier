@@ -159,7 +159,7 @@ def main():
 
     print(
         "\nCompare test_results above against your classical fusion model "
-        "(90.36% accuracy, 0.903 F1). Report both, and discuss the gap "
+        "(90.89% accuracy, 0.908 F1). Report both, and discuss the gap "
         "(if any) in terms of whether the added compute cost and reduced "
         "interpretability of the transformer is justified by the performance gain."
     )

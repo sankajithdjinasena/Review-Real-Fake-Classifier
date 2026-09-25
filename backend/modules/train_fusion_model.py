@@ -98,9 +98,14 @@ def main():
         print(f"Saved augmented CSV with engineered columns to {args.save_augmented_csv}")
 
     y = df[args.label_col].values
-    idx_train, idx_test = train_test_split(
-        np.arange(len(df)), test_size=0.2, random_state=RANDOM_STATE, stratify=y
+    idx_train, idx_temp = train_test_split(
+        np.arange(len(df)), test_size=0.3, random_state=RANDOM_STATE, stratify=y
     )
+    idx_val, idx_test = train_test_split(
+        idx_temp, test_size=0.5, random_state=RANDOM_STATE, stratify=y[idx_temp]
+    )
+
+    print(f"Train: {len(idx_train)}  Val: {len(idx_val)}  Test: {len(idx_test)}")
 
     # ---- TF-IDF ----
     vectorizer = TfidfVectorizer(

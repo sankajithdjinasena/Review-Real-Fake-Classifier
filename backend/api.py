@@ -20,6 +20,7 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 import fusion_inference
+import scraper
 
 app = FastAPI(
     title="Detecting Deception in Product Reviews - API",
@@ -196,6 +197,17 @@ class PredictRequest(BaseModel):
     fusion_dir: Optional[str] = DEFAULT_FUSION_DIR
 
 
+class ScrapeRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
+    url: str
+    model_choice: str = "DistilBERT (Transformer)"
+    max_reviews: Optional[int] = 12
+    model_dir: Optional[str] = DEFAULT_MODEL_DIR
+    fusion_dir: Optional[str] = DEFAULT_FUSION_DIR
+
+
+
 
 # ============================================================
 # ENDPOINTS
@@ -265,22 +277,22 @@ def get_investigation():
         "models": [
             {
                 "name": "Engineered Features (Random Forest)",
-                "accuracy": 82.75,
+                "accuracy": 85.27,
                 "color": "#8DA0A8",
             },
             {
                 "name": "TF-IDF (Linear SVM)",
-                "accuracy": 88.39,
+                "accuracy": 87.82,
                 "color": "#7BB6C9",
             },
             {
                 "name": "Fusion Model (TF-IDF + Engineered)",
-                "accuracy": 90.36,
+                "accuracy": 90.89,
                 "color": "#F4C95D",
             },
             {
                 "name": "DistilBERT (fine-tuned)",
-                "accuracy": 98.30,
+                "accuracy": 98.05,
                 "color": "#5FD3A0",
             },
         ]
@@ -291,14 +303,14 @@ def get_investigation():
 def get_verdict():
     return {
         "confusion_matrix": [
-            {"y": "Actual Real", "Predicted Real": 2963, "Predicted Fake": 70},
-            {"y": "Actual Fake", "Predicted Real": 33, "Predicted Fake": 2995},
+            {"y": "Actual Real", "Predicted Real": 2941, "Predicted Fake": 92},
+            {"y": "Actual Fake", "Predicted Real": 26, "Predicted Fake": 3002},
         ],
         "metrics": {
-            "accuracy": "98.30%",
-            "f1": "98.31%",
-            "precision": "97.72%",
-            "recall": "98.91%",
+            "accuracy": "98.05%",
+            "f1": "98.07%",
+            "precision": "97.03%",
+            "recall": "99.14%",
         },
         "sample_size": "6,061 held-out reviews",
     }
@@ -612,6 +624,66 @@ def import_pandas_concat(objs):
     import pandas as pd
 
     return pd.concat(objs)
+
+
+@app.post("/api/scrape-and-predict")
+def scrape_and_predict(req: ScrapeRequest):
+    url = req.url.strip()
+    if not url:
+        raise HTTPException(status_code=400, detail="URL cannot be empty.")
+
+    try:
+        scraped_data = scraper.scrape_reviews_from_url(
+            url, max_reviews=req.max_reviews or 12
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, detail=f"Failed to scrape URL: {e}"
+        )
+
+    scraped_reviews = scraped_data["reviews"]
+    if not scraped_reviews:
+        raise HTTPException(
+            status_code=422,
+            detail="Could not extract any review text from the specified URL.",
+        )
+
+    results = []
+    real_count = 0
+    fake_count = 0
+
+    for item in scraped_reviews:
+        predict_req = PredictRequest(
+            text=item["text"],
+            model_choice=req.model_choice,
+            model_dir=req.model_dir,
+            fusion_dir=req.fusion_dir,
+        )
+        res = predict_review(predict_req)
+        res["title"] = item["title"]
+        res["rating"] = item["rating"]
+        res["text"] = item["text"]
+
+        if res["label"] == "real":
+            real_count += 1
+        else:
+            fake_count += 1
+
+        results.append(res)
+
+    total = len(results)
+    trust_score = round((real_count / total) * 100, 1) if total > 0 else 0.0
+
+    return {
+        "product_title": scraped_data["product_title"],
+        "url": url,
+        "trust_score": trust_score,
+        "total_reviews": total,
+        "real_count": real_count,
+        "fake_count": fake_count,
+        "reviews": results,
+    }
+
 
 
 # Mount static React build if it exists

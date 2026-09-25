@@ -3,10 +3,10 @@ import { Award, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export default function VerdictTab({ data }) {
   const metrics = data?.metrics || {
-    accuracy: "98.30%",
-    f1: "98.31%",
-    precision: "97.72%",
-    recall: "98.91%",
+    accuracy: "98.05%",
+    f1: "98.07%",
+    precision: "97.03%",
+    recall: "99.14%",
   };
 
   return (
@@ -35,25 +35,25 @@ export default function VerdictTab({ data }) {
             </h3>
             <div className="grid grid-cols-2 gap-4 text-center font-mono">
               <div className="bg-[#5FD3A0]/15 border border-[#5FD3A0]/40 rounded-xl p-6 flex flex-col items-center justify-center">
-                <span className="text-3xl sm:text-4xl font-extrabold text-[#5FD3A0]">2,963</span>
+                <span className="text-3xl sm:text-4xl font-extrabold text-[#5FD3A0]">2,941</span>
                 <span className="text-xs text-[#8DA0A8] uppercase tracking-wider mt-2 font-sans font-semibold">True Real</span>
                 <span className="text-[11px] text-[#5FD3A0]/80 mt-1">Actual Real → Pred Real</span>
               </div>
 
               <div className="bg-[#E64980]/15 border border-[#E64980]/40 rounded-xl p-6 flex flex-col items-center justify-center">
-                <span className="text-3xl sm:text-4xl font-extrabold text-[#E64980]">70</span>
+                <span className="text-3xl sm:text-4xl font-extrabold text-[#E64980]">92</span>
                 <span className="text-xs text-[#8DA0A8] uppercase tracking-wider mt-2 font-sans font-semibold">False Positive</span>
                 <span className="text-[11px] text-[#E64980]/80 mt-1">Actual Real → Pred Fake</span>
               </div>
 
               <div className="bg-[#F4C95D]/15 border border-[#F4C95D]/40 rounded-xl p-6 flex flex-col items-center justify-center">
-                <span className="text-3xl sm:text-4xl font-extrabold text-[#F4C95D]">33</span>
+                <span className="text-3xl sm:text-4xl font-extrabold text-[#F4C95D]">26</span>
                 <span className="text-xs text-[#8DA0A8] uppercase tracking-wider mt-2 font-sans font-semibold">False Negative</span>
                 <span className="text-[11px] text-[#F4C95D]/80 mt-1">Actual Fake → Pred Real</span>
               </div>
 
               <div className="bg-[#5FD3A0]/15 border border-[#5FD3A0]/40 rounded-xl p-6 flex flex-col items-center justify-center">
-                <span className="text-3xl sm:text-4xl font-extrabold text-[#5FD3A0]">2,995</span>
+                <span className="text-3xl sm:text-4xl font-extrabold text-[#5FD3A0]">3,002</span>
                 <span className="text-xs text-[#8DA0A8] uppercase tracking-wider mt-2 font-sans font-semibold">True Fake</span>
                 <span className="text-[11px] text-[#5FD3A0]/80 mt-1">Actual Fake → Pred Fake</span>
               </div>
@@ -61,7 +61,7 @@ export default function VerdictTab({ data }) {
           </div>
           <div className="text-xs text-[#8DA0A8] mt-6 pt-4 border-t border-[#2E3A41] flex items-center justify-between">
             <span>Total Evaluated: 6,061 reviews</span>
-            <span className="text-[#5FD3A0]">Overall Accuracy: 98.30%</span>
+            <span className="text-[#5FD3A0]">Overall Accuracy: 98.05%</span>
           </div>
         </div>
 
@@ -92,7 +92,7 @@ export default function VerdictTab({ data }) {
               Critical Note on Performance
             </div>
             <p className="text-xs text-[#8DA0A8] leading-relaxed">
-              A ~8-point accuracy gain over the best classical fusion model (90.36%) - but likely inflated by GPT-2's comparatively easy-to-detect generation artifacts. Review the Case Notes tab to see exact error failure modes.
+              A ~7-point accuracy gain over the best classical fusion model (90.89%) - but likely inflated by GPT-2's comparatively easy-to-detect generation artifacts. Review the Case Notes tab to see exact error failure modes.
             </p>
           </div>
         </div>

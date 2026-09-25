@@ -45,3 +45,5 @@ Thumbs.db
 # Environment Variables
 .env
 .env.local
+
+*.docx

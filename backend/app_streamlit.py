@@ -2,11 +2,11 @@
 import os
 import html
 
+from modules import fusion_inference
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-import fusion_inference
 
 
 # ============================================================
@@ -755,7 +755,7 @@ elif page == "The Investigation":
         "Fusion Model\n(TF-IDF + Engineered)",
         "DistilBERT\n(fine-tuned)",
     ]
-    scores = [82.75, 88.39, 90.36, 98.30]
+    scores = [85.27, 87.82, 90.89, 98.05]
     colors = [FOG, "#7BB6C9", SIGNAL, VERIFIED]
 
     fig = go.Figure(
@@ -825,19 +825,19 @@ elif page == "The Verdict":
         st.markdown("##### Test Set Metrics")
 
         m1, m2 = st.columns(2)
-        metric_card("98.30%", "Accuracy", color=VERIFIED, container=m1)
-        metric_card("98.31%", "F1 (fake class)", color=VERIFIED, container=m2)
+        metric_card("98.05%", "Accuracy", color=VERIFIED, container=m1)
+        metric_card("98.07%", "F1 (fake class)", color=VERIFIED, container=m2)
 
         st.markdown("")
 
         m3, m4 = st.columns(2)
-        metric_card("97.72%", "Precision (fake)", color=VERIFIED, container=m3)
-        metric_card("98.91%", "Recall (fake)", color=VERIFIED, container=m4)
+        metric_card("97.03%", "Precision (fake)", color=VERIFIED, container=m3)
+        metric_card("99.14%", "Recall (fake)", color=VERIFIED, container=m4)
 
         st.markdown("")
 
         st.caption(
-            "A ~8-point accuracy gain over the best classical model (fusion, 90.36%) - "
+            "A ~7-point accuracy gain over the best classical model (fusion, 90.89%) - "
             "but likely inflated by GPT-2's comparatively easy-to-detect generation artifacts. "
             "See Case Notes."
         )

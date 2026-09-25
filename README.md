@@ -8,10 +8,10 @@ This project compares four modelling approaches - hand-engineered linguistic fea
 
 | Approach | Model | Accuracy | F1 (fake) |
 |---|---|---|---|
-| Engineered Features | Random Forest | 82.75% | 0.824 |
-| TF-IDF | Linear SVM | 88.39% | 0.884 |
-| Fusion (TF-IDF + Engineered) | Linear SVM | 90.36% | 0.903 |
-| **Fine-tuned DistilBERT** | Transformer | **98.30%** | **0.983** |
+| Engineered Features | Random Forest | 85.27% | 0.852 |
+| TF-IDF | Linear SVM | 87.82% | 0.877 |
+| Fusion (TF-IDF + Engineered) | Linear SVM | 90.89% | 0.908 |
+| **Fine-tuned DistilBERT** | Transformer | **98.05%** | **0.981** |
 
 ---
 

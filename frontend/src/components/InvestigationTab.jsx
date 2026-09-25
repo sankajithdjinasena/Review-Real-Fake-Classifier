@@ -4,38 +4,38 @@ import { Cpu, ShieldCheck, Sparkles, Sliders } from 'lucide-react';
 
 export default function InvestigationTab({ data }) {
   const models = data?.models || [
-    { name: "Engineered Features (Random Forest)", accuracy: 82.75, color: "#8DA0A8" },
-    { name: "TF-IDF (Linear SVM)", accuracy: 88.39, color: "#7BB6C9" },
-    { name: "Fusion Model (TF-IDF + Engineered)", accuracy: 90.36, color: "#F4C95D" },
-    { name: "DistilBERT (fine-tuned)", accuracy: 98.30, color: "#5FD3A0" },
+    { name: "Engineered Features (Random Forest)", accuracy: 85.27, color: "#8DA0A8" },
+    { name: "TF-IDF (Linear SVM)", accuracy: 87.82, color: "#7BB6C9" },
+    { name: "Fusion Model (TF-IDF + Engineered)", accuracy: 90.89, color: "#F4C95D" },
+    { name: "DistilBERT (fine-tuned)", accuracy: 98.05, color: "#5FD3A0" },
   ];
 
   const details = [
     {
       title: "Lead 1: Hand-Engineered Features",
       icon: Sliders,
-      score: "82.75%",
+      score: "85.27%",
       color: "border-[#8DA0A8]/40 text-[#8DA0A8]",
       desc: "10 domain features extracted: lexical diversity (TTR), uppercase ratios, sentiment polarity/subjectivity, average word length, punctuation count. Modeled with Random Forest.",
     },
     {
       title: "Lead 2: TF-IDF Sparse N-Grams",
       icon: Cpu,
-      score: "88.39%",
+      score: "87.82%",
       color: "border-[#7BB6C9]/40 text-[#7BB6C9]",
       desc: "Top 100,000 unigram and bigram TF-IDF vectors paired with Linear Support Vector Machines. Captures vocabulary frequency patterns of synthetic text.",
     },
     {
       title: "Lead 3: Hybrid Fusion Model",
       icon: Sparkles,
-      score: "90.36%",
+      score: "90.89%",
       color: "border-[#F4C95D]/40 text-[#F4C95D]",
       desc: "Stitches TF-IDF n-grams with scaled engineered features into a single sparse matrix, calibrated via Logistic Regression and Linear SVM.",
     },
     {
       title: "Lead 4: DistilBERT Fine-Tuned Transformer",
       icon: ShieldCheck,
-      score: "98.30%",
+      score: "98.05%",
       color: "border-[#5FD3A0]/40 text-[#5FD3A0]",
       desc: "6-layer transformer encoder pre-trained on English text and fine-tuned for sequence classification over 3 epochs with AdamW optimizer.",
     },

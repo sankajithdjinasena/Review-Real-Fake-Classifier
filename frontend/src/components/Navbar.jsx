@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Database, Cpu, CheckCircle2, FileText, Activity } from 'lucide-react';
+import { Search, Database, Cpu, CheckCircle2, FileText, Activity, Link2 } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, health }) {
   const navItems = [
@@ -9,6 +9,7 @@ export default function Navbar({ activeTab, setActiveTab, health }) {
     { id: 'Verdict', label: 'The Verdict', icon: CheckCircle2 },
     { id: 'CaseNotes', label: 'Case Notes', icon: FileText },
     { id: 'LiveInterrogation', label: '🔎 Live Interrogation', icon: Search },
+    { id: 'UrlScraper', label: '🔗 URL Scraper', icon: Link2 },
   ];
 
   return (

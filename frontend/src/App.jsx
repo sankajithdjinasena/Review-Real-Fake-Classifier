@@ -6,6 +6,7 @@ import InvestigationTab from './components/InvestigationTab';
 import VerdictTab from './components/VerdictTab';
 import CaseNotesTab from './components/CaseNotesTab';
 import LiveInterrogationTab from './components/LiveInterrogationTab';
+import UrlScraperTab from './components/UrlScraperTab';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('Overview');
@@ -66,6 +67,7 @@ export default function App() {
         {activeTab === 'LiveInterrogation' && (
           <LiveInterrogationTab health={health} />
         )}
+        {activeTab === 'UrlScraper' && <UrlScraperTab />}
       </main>
 
       <footer className="border-t border-[#2E3A41] py-6 bg-[#1B2328] text-center text-xs text-[#8DA0A8]">
