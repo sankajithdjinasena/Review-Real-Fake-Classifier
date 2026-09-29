@@ -3,6 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine
 } from 'recharts';
 import { Search, Loader2, Info, CheckCircle2, AlertTriangle, Settings, Sparkles } from 'lucide-react';
+import { formatPercent } from '../utils/format';
 
 export default function LiveInterrogationTab({ health }) {
   const [text, setText] = useState('');
@@ -54,13 +55,13 @@ export default function LiveInterrogationTab({ health }) {
 
   const sampleReviews = [
     {
-      label: "Real Sample",
-      text: "I bought this for my kitchen and it works great, the build quality is solid and it has lasted me over a year without any issues at all."
+      label: 'Real Sample',
+      text: 'I bought this for my kitchen and it works great, the build quality is solid and it has lasted me over a year without any issues at all.',
     },
     {
-      label: "Fake Sample",
-      text: "This product is amazing and exceptional. Very nice design and highly recommend to all buyers looking for standard high quality results."
-    }
+      label: 'Fake Sample',
+      text: 'This product is amazing and exceptional. Very nice design and highly recommend to all buyers looking for standard high quality results.',
+    },
   ];
 
   return (
@@ -68,48 +69,48 @@ export default function LiveInterrogationTab({ health }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 font-mono text-xs text-[#8DA0A8] border border-[#2E3A41] px-2.5 py-1 rounded bg-[#1B2328] mb-2">
-            <span className="w-2 h-2 rounded-full bg-[#5FD3A0]"></span>
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold mb-2">
+            <Search className="w-3.5 h-3.5 text-indigo-600" />
             LIVE MODEL INTERROGATION
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#E9EDEE]">
-            Try it yourself
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Interrogate any product review
           </h2>
-          <p className="text-sm text-[#8DA0A8] mt-1">
-            Paste a product review below and pick which model classifies it.
+          <p className="text-sm text-slate-500 mt-1">
+            Paste a product review below and select which trained model classifies its authenticity.
           </p>
         </div>
 
         <button
           onClick={() => setShowSettings(!showSettings)}
-          className="self-start sm:self-auto inline-flex items-center gap-2 bg-[#1B2328] border border-[#2E3A41] text-[#8DA0A8] hover:text-[#E9EDEE] text-xs font-mono px-3 py-2 rounded-lg transition-colors"
+          className="self-start sm:self-auto inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-mono px-3 py-2 rounded-lg transition-colors shadow-2xs cursor-pointer"
         >
-          <Settings className="w-4 h-4" />
+          <Settings className="w-3.5 h-3.5 text-slate-500" />
           {showSettings ? 'Hide Path Config' : 'Model Paths'}
         </button>
       </div>
 
       {/* Path Settings Accordion */}
       {showSettings && (
-        <div className="bg-[#1B2328] border border-[#2E3A41] rounded-xl p-5 space-y-4 animate-fadeIn">
-          <h4 className="text-xs font-mono uppercase text-[#8DA0A8] font-bold">⚙️ Custom Model Directory Paths</h4>
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-4 animate-fadeIn">
+          <h4 className="text-xs font-mono uppercase text-slate-600 font-bold">⚙️ Custom Model Directory Paths</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-[#8DA0A8] font-mono mb-1">DistilBERT model folder path</label>
+              <label className="block text-xs text-slate-600 font-mono mb-1">DistilBERT model folder path</label>
               <input
                 type="text"
                 value={modelDir}
                 onChange={(e) => setModelDir(e.target.value)}
-                className="w-full bg-[#212B31] border border-[#2E3A41] rounded-lg px-3 py-2 text-xs font-mono text-[#E9EDEE] focus:outline-none focus:border-[#5FD3A0]"
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="block text-xs text-[#8DA0A8] font-mono mb-1">Fusion model folder path</label>
+              <label className="block text-xs text-slate-600 font-mono mb-1">Fusion model folder path</label>
               <input
                 type="text"
                 value={fusionDir}
                 onChange={(e) => setFusionDir(e.target.value)}
-                className="w-full bg-[#212B31] border border-[#2E3A41] rounded-lg px-3 py-2 text-xs font-mono text-[#E9EDEE] focus:outline-none focus:border-[#5FD3A0]"
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
           </div>
@@ -117,14 +118,14 @@ export default function LiveInterrogationTab({ health }) {
       )}
 
       {/* Input Form */}
-      <div className="bg-[#1B2328] border border-[#2E3A41] rounded-xl p-6 space-y-5">
+      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-5 shadow-2xs">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="w-full sm:w-80">
-            <label className="block text-xs font-mono text-[#8DA0A8] mb-1">Select Model</label>
+            <label className="block text-xs font-mono text-slate-500 mb-1">Select Classification Model</label>
             <select
               value={modelChoice}
               onChange={(e) => setModelChoice(e.target.value)}
-              className="w-full bg-[#212B31] border border-[#2E3A41] rounded-lg px-3 py-2.5 text-sm font-semibold text-[#E9EDEE] focus:outline-none focus:border-[#5FD3A0]"
+              className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="DistilBERT (Transformer)">DistilBERT (Transformer)</option>
               <option value="Fusion - Logistic Regression">Fusion - Logistic Regression</option>
@@ -134,12 +135,12 @@ export default function LiveInterrogationTab({ health }) {
 
           {/* Quick Preset Buttons */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#8DA0A8] font-mono">Quick test:</span>
+            <span className="text-xs text-slate-500 font-mono">Quick test:</span>
             {sampleReviews.map((sample, idx) => (
               <button
                 key={idx}
                 onClick={() => setText(sample.text)}
-                className="text-xs font-mono bg-[#212B31] border border-[#2E3A41] hover:border-[#8DA0A8] text-[#E9EDEE] px-2.5 py-1.5 rounded transition-all"
+                className="text-xs font-mono bg-slate-50 border border-slate-300 hover:bg-slate-100 text-slate-700 px-3 py-1.5 rounded-md transition-all cursor-pointer"
               >
                 {sample.label}
               </button>
@@ -148,33 +149,33 @@ export default function LiveInterrogationTab({ health }) {
         </div>
 
         <div>
-          <label className="block text-xs font-mono text-[#8DA0A8] mb-1">Review text</label>
+          <label className="block text-xs font-mono text-slate-500 mb-1">Review Text Input</label>
           <textarea
             rows={5}
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="e.g. I bought this for my kitchen and it works great, the build quality is solid and it has lasted me over a year without any issues at all."
-            className="w-full bg-[#212B31] border border-[#2E3A41] rounded-lg p-4 text-sm text-[#E9EDEE] placeholder-[#8DA0A8]/50 focus:outline-none focus:border-[#5FD3A0] transition-colors"
+            className="w-full bg-white border border-slate-300 rounded-xl p-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-2xs"
           ></textarea>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <span className="text-xs font-mono text-[#8DA0A8]">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-1">
+          <span className="text-xs font-mono text-slate-500">
             {wordCount} words {wordCount < 3 && '(minimum 3 required)'}
           </span>
 
           <button
             onClick={handleAnalyze}
             disabled={isButtonDisabled}
-            className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-mono font-bold text-sm transition-all shadow-md ${
+            className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-sm ${
               isButtonDisabled
-                ? 'bg-[#2E3A41] text-[#8DA0A8] cursor-not-allowed'
-                : 'bg-[#E9EDEE] text-[#12181C] hover:bg-[#5FD3A0] cursor-pointer'
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                : 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer'
             }`}
           >
             {loading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin text-[#12181C]" />
+                <Loader2 className="w-4 h-4 animate-spin text-white" />
                 Running Analysis...
               </>
             ) : (
@@ -187,51 +188,51 @@ export default function LiveInterrogationTab({ health }) {
         </div>
       </div>
 
-      {/* Error alert */}
+      {/* Error Alert */}
       {error && (
-        <div className="bg-[#E64980]/15 border border-[#E64980] rounded-xl p-4 flex items-center gap-3 text-sm text-[#E64980] font-mono">
-          <AlertTriangle className="w-5 h-5 shrink-0" />
+        <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-center gap-3 text-sm text-rose-700 font-mono">
+          <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{error}</span>
         </div>
       )}
 
-      {/* Prediction Output Results */}
+      {/* Output Results */}
       {result && (
         <div className="space-y-6 animate-fadeIn">
-          {/* Verdict Box */}
+          {/* Verdict Card */}
           <div
-            className={`rounded-xl p-6 border transition-all ${
+            className={`rounded-xl p-6 border transition-all shadow-2xs ${
               result.label === 'real'
-                ? 'bg-[#5FD3A0]/10 border-[#5FD3A0]/40'
-                : 'bg-[#E64980]/10 border-[#E64980]/40'
+                ? 'bg-emerald-50/90 border-emerald-200 text-emerald-900'
+                : 'bg-rose-50/90 border-rose-200 text-rose-900'
             }`}
           >
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <div
                   className={`font-mono text-xl sm:text-2xl font-bold flex items-center gap-2 ${
-                    result.label === 'real' ? 'text-[#5FD3A0]' : 'text-[#E64980]'
+                    result.label === 'real' ? 'text-emerald-700' : 'text-rose-700'
                   }`}
                 >
                   {result.label === 'real' ? (
                     <>
-                      <CheckCircle2 className="w-7 h-7" />
+                      <CheckCircle2 className="w-7 h-7 text-emerald-600" />
                       ✓ LIKELY GENUINE
                     </>
                   ) : (
                     <>
-                      <AlertTriangle className="w-7 h-7" />
+                      <AlertTriangle className="w-7 h-7 text-rose-600" />
                       ⚑ LIKELY AI-GENERATED
                     </>
                   )}
                 </div>
-                <div className="text-xs sm:text-sm text-[#8DA0A8] font-mono mt-1">
-                  Model confidence: <strong className="text-[#E9EDEE]">{(result.confidence * 100).toFixed(1)}%</strong>
+                <div className="text-xs sm:text-sm text-slate-600 font-mono mt-1">
+                  Model confidence: <strong className="text-slate-900">{formatPercent(result.confidence)}</strong>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="text-xs font-mono text-[#8DA0A8] bg-[#12181C] border border-[#2E3A41] px-3 py-1.5 rounded-lg">
+                <span className="text-xs font-mono text-slate-600 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-2xs">
                   Device: {result.device}
                 </span>
               </div>
@@ -240,42 +241,42 @@ export default function LiveInterrogationTab({ health }) {
 
           {/* Probability Meters */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-[#1B2328] border border-[#2E3A41] rounded-xl p-5">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs">
               <div className="flex justify-between items-center mb-2 font-mono">
-                <span className="text-xs text-[#8DA0A8]">Real Probability</span>
-                <span className="text-lg font-bold text-[#5FD3A0]">{(result.prob_real * 100).toFixed(1)}%</span>
+                <span className="text-xs text-slate-500 font-semibold">Real Probability</span>
+                <span className="text-lg font-bold text-emerald-600">{formatPercent(result.prob_real)}</span>
               </div>
-              <div className="w-full bg-[#212B31] h-3 rounded-full overflow-hidden">
+              <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
                 <div
-                  className="bg-[#5FD3A0] h-full transition-all duration-500"
+                  className="bg-emerald-600 h-full transition-all duration-500"
                   style={{ width: `${result.prob_real * 100}%` }}
                 ></div>
               </div>
             </div>
 
-            <div className="bg-[#1B2328] border border-[#2E3A41] rounded-xl p-5">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs">
               <div className="flex justify-between items-center mb-2 font-mono">
-                <span className="text-xs text-[#8DA0A8]">Fake Probability</span>
-                <span className="text-lg font-bold text-[#E64980]">{(result.prob_fake * 100).toFixed(1)}%</span>
+                <span className="text-xs text-slate-500 font-semibold">Fake Probability</span>
+                <span className="text-lg font-bold text-rose-600">{formatPercent(result.prob_fake)}</span>
               </div>
-              <div className="w-full bg-[#212B31] h-3 rounded-full overflow-hidden">
+              <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
                 <div
-                  className="bg-[#E64980] h-full transition-all duration-500"
+                  className="bg-rose-600 h-full transition-all duration-500"
                   style={{ width: `${result.prob_fake * 100}%` }}
                 ></div>
               </div>
             </div>
           </div>
 
-          {/* SHAP / Feature Explanation Chart */}
-          <div className="bg-[#1B2328] border border-[#2E3A41] rounded-xl p-6 space-y-6">
+          {/* SHAP Explanation Chart */}
+          <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-6 shadow-2xs">
             <div>
-              <h3 className="text-lg font-bold text-[#E9EDEE] flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-[#F4C95D]" />
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-indigo-600" />
                 🔬 Why did the model make this prediction?
               </h3>
-              <p className="text-xs sm:text-sm text-[#8DA0A8] mt-1">
-                Which words/features pushed this review toward FAKE vs. REAL
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                Which specific words/features pushed this review toward FAKE vs. REAL
               </p>
             </div>
 
@@ -287,62 +288,66 @@ export default function LiveInterrogationTab({ health }) {
                     layout="vertical"
                     margin={{ top: 10, right: 40, left: 60, bottom: 20 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#2E3A41" />
-                    <XAxis type="number" stroke="#8DA0A8" tick={{ fill: '#8DA0A8', fontSize: 11 }} />
-                    <YAxis dataKey="display_token" type="category" stroke="#8DA0A8" tick={{ fill: '#E9EDEE', fontSize: 12 }} width={80} />
-                    <ReferenceLine x={0} stroke="#8DA0A8" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                    <XAxis type="number" stroke="#64748B" tick={{ fill: '#64748B', fontSize: 11 }} />
+                    <YAxis dataKey="display_token" type="category" stroke="#64748B" tick={{ fill: '#0F172A', fontSize: 12, fontWeight: 500 }} width={90} />
+                    <ReferenceLine x={0} stroke="#94A3B8" />
                     <Tooltip
-                      contentStyle={{ backgroundColor: '#212B31', borderColor: '#2E3A41', color: '#E9EDEE', borderRadius: '8px' }}
-                      itemStyle={{ color: '#E9EDEE' }}
-                      labelStyle={{ color: '#8DA0A8', fontWeight: 600 }}
-                      cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                      contentStyle={{
+                        backgroundColor: '#FFFFFF',
+                        borderColor: '#E2E8F0',
+                        color: '#0F172A',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        fontSize: '12px',
+                      }}
                       formatter={(val) => [val, 'Contribution']}
                     />
                     <Bar dataKey="shap_value" radius={[2, 2, 2, 2]}>
                       {result.contributions.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.shap_value > 0 ? '#E64980' : '#5FD3A0'} />
+                        <Cell key={`cell-${index}`} fill={entry.shap_value > 0 ? '#E11D48' : '#059669'} />
                       ))}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="bg-[#212B31] border border-[#2E3A41] rounded-lg p-6 text-center text-xs text-[#8DA0A8] font-mono">
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 text-center text-xs text-slate-500 font-mono">
                 No strong word/feature contributions extracted for this text.
               </div>
             )}
 
             {/* Chart Legend Box */}
-            <div className="bg-[#212B31] border border-[#2E3A41] rounded-xl p-5 text-xs text-[#8DA0A8] space-y-2">
-              <div className="font-mono text-sm font-bold text-[#E9EDEE]">🔬 How to read this chart</div>
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 space-y-1.5">
+              <div className="font-mono text-sm font-bold text-slate-900">🔬 How to read this chart</div>
               <p>
-                <span className="text-[#E64980] font-bold">Pink bars</span> push the prediction toward <b>FAKE</b>.{' '}
-                <span className="text-[#5FD3A0] font-bold">Green bars</span> push it toward <b>REAL</b>.
+                <span className="text-rose-600 font-bold">Rose bars</span> push the prediction toward <b>FAKE</b>.{' '}
+                <span className="text-emerald-600 font-bold">Green bars</span> push it toward <b>REAL</b>.
               </p>
               <p>
-                This coloring is fixed regardless of what the model predicted for this review. Longer bars had a bigger effect on this specific prediction.
+                This color coding is consistent across predictions. Longer bars indicate stronger influence on this review's outcome.
               </p>
             </div>
 
             {/* Top Influential Table */}
             {result.top_influential && result.top_influential.length > 0 && (
               <div className="space-y-3 pt-4">
-                <h4 className="text-sm font-bold text-[#E9EDEE]">🔍 Most influential words / features</h4>
-                <div className="overflow-x-auto border border-[#2E3A41] rounded-lg">
+                <h4 className="text-sm font-bold text-slate-900">🔍 Most influential words / features</h4>
+                <div className="overflow-x-auto border border-slate-200 rounded-lg shadow-2xs">
                   <table className="w-full text-left text-xs font-mono">
-                    <thead className="bg-[#212B31] text-[#8DA0A8] border-b border-[#2E3A41]">
+                    <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
                       <tr>
                         <th className="p-3">Word / Feature</th>
                         <th className="p-3">Contribution</th>
                         <th className="p-3">Pushes toward</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#2E3A41] text-[#E9EDEE]">
+                    <tbody className="divide-y divide-slate-100 text-slate-800">
                       {result.top_influential.map((row, idx) => (
-                        <tr key={idx} className="hover:bg-[#212B31]/50">
-                          <td className="p-3 font-semibold">{row.token}</td>
+                        <tr key={idx} className="hover:bg-slate-50">
+                          <td className="p-3 font-semibold text-slate-900">{row.token}</td>
                           <td className="p-3">{row.contribution}</td>
-                          <td className={`p-3 font-bold ${row.pushes_toward.includes('FAKE') ? 'text-[#E64980]' : 'text-[#5FD3A0]'}`}>
+                          <td className={`p-3 font-bold ${row.pushes_toward.includes('FAKE') ? 'text-rose-600' : 'text-emerald-600'}`}>
                             {row.pushes_toward}
                           </td>
                         </tr>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
+import TopHeader from './components/TopHeader';
 import OverviewTab from './components/OverviewTab';
 import DatasetTab from './components/DatasetTab';
 import InvestigationTab from './components/InvestigationTab';
@@ -16,6 +17,9 @@ export default function App() {
   const [investigationData, setInvestigationData] = useState(null);
   const [verdictData, setVerdictData] = useState(null);
   const [caseNotesData, setCaseNotesData] = useState(null);
+
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => {
     // Fetch initial status & static dashboard data
@@ -51,31 +55,60 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#12181C] text-[#E9EDEE] flex flex-col font-sans">
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} health={health} />
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-700">
+      {/* Sidebar Navigation */}
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        health={health}
+        isCollapsed={isSidebarCollapsed}
+        setIsCollapsed={setIsSidebarCollapsed}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
+      />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'Overview' && (
-          <OverviewTab stats={stats} setActiveTab={setActiveTab} />
-        )}
-        {activeTab === 'Dataset' && <DatasetTab data={datasetData} />}
-        {activeTab === 'Investigation' && (
-          <InvestigationTab data={investigationData} />
-        )}
-        {activeTab === 'Verdict' && <VerdictTab data={verdictData} />}
-        {activeTab === 'CaseNotes' && <CaseNotesTab data={caseNotesData} />}
-        {activeTab === 'LiveInterrogation' && (
-          <LiveInterrogationTab health={health} />
-        )}
-        {activeTab === 'UrlScraper' && <UrlScraperTab />}
-      </main>
+      {/* Main Layout Area */}
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 ${
+          isSidebarCollapsed ? 'md:pl-[80px]' : 'md:pl-[260px]'
+        }`}
+      >
+        {/* Top Header */}
+        <TopHeader
+          activeTab={activeTab}
+          setIsMobileOpen={setIsMobileOpen}
+          health={health}
+        />
 
-      <footer className="border-t border-[#2E3A41] py-6 bg-[#1B2328] text-center text-xs text-[#8DA0A8]">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2 font-mono">
-          <span>Capstone Project in Data Science II (DS4105) - Sabaragamuwa University of Sri Lanka</span>
-          <span className="text-[#5FD3A0]">React 18 + FastAPI Powered</span>
-        </div>
-      </footer>
+        {/* Workspace Content */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1600px] w-full mx-auto">
+          {activeTab === 'Overview' && (
+            <OverviewTab stats={stats} setActiveTab={setActiveTab} />
+          )}
+          {activeTab === 'Dataset' && <DatasetTab data={datasetData} />}
+          {activeTab === 'Investigation' && (
+            <InvestigationTab data={investigationData} />
+          )}
+          {activeTab === 'Verdict' && <VerdictTab data={verdictData} />}
+          {activeTab === 'CaseNotes' && <CaseNotesTab data={caseNotesData} />}
+          {activeTab === 'LiveInterrogation' && (
+            <LiveInterrogationTab health={health} />
+          )}
+          {activeTab === 'UrlScraper' && <UrlScraperTab />}
+        </main>
+
+        {/* Footer */}
+        <footer className="border-t border-slate-200 py-5 bg-white text-slate-500 text-xs">
+          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-3 font-mono">
+            <span>
+              Capstone Project in Data Science II (DS4105) - Sabaragamuwa University of Sri Lanka
+            </span>
+            <span className="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200 font-semibold">
+              React 18 + FastAPI Powered
+            </span>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }

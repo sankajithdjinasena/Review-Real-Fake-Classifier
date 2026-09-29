@@ -499,9 +499,9 @@ def predict_review(req: PredictRequest):
 
         return {
             "label": result["label"],
-            "confidence": round(result["confidence"], 4),
-            "prob_real": round(result["prob_real"], 4),
-            "prob_fake": round(result["prob_fake"], 4),
+            "confidence": round(result["confidence"], 6),
+            "prob_real": round(result["prob_real"], 6),
+            "prob_fake": round(result["prob_fake"], 6),
             "contributions": contributions,
             "top_influential": top_influential,
             "method_note": note,
@@ -610,9 +610,9 @@ def predict_review(req: PredictRequest):
 
         return {
             "label": label,
-            "confidence": round(confidence, 4),
-            "prob_real": round(prob_real, 4),
-            "prob_fake": round(prob_fake, 4),
+            "confidence": round(confidence, 6),
+            "prob_real": round(prob_real, 6),
+            "prob_fake": round(prob_fake, 6),
             "contributions": contributions,
             "top_influential": top_influential,
             "method_note": "SHAP feature contribution values over DistilBERT transformer tokens.",
