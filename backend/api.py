@@ -105,20 +105,34 @@ def get_bert(model_dir: str):
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     try:
+        # Load the tokenizer saved with the trained DistilBERT model
         tokenizer = AutoTokenizer.from_pretrained(model_dir)
+
+        # Load the trained classification model and move it to CPU or GPU
         model = AutoModelForSequenceClassification.from_pretrained(model_dir).to(
             device
         )
+
+        # Put the model into evaluation/inference mode
         model.eval()
+
+        # Cache the model, tokenizer, device and model directory for reuse
         model_cache["bert_model"] = model
         model_cache["bert_tokenizer"] = tokenizer
         model_cache["bert_device"] = device
         model_cache["bert_dir"] = model_dir
-        model_cache["shap_explainer"] = None  # Reset explainer for new model
+
+        # Clear the old SHAP explainer because a different model may have been loaded
+        model_cache["shap_explainer"] = None
+
+        # Return everything needed for prediction
         return model, tokenizer, device
+
     except Exception as e:
+        # Return an HTTP 500 error if the model cannot be loaded
         raise HTTPException(
-            status_code=500, detail=f"Failed to load DistilBERT model: {e}"
+            status_code=500,
+            detail=f"Failed to load DistilBERT model: {e}"
         )
 
 
@@ -157,21 +171,36 @@ def get_shap_explainer(model_dir: str):
             probabilities = torch.softmax(logits, dim=-1)
         return probabilities.cpu().numpy()
 
+    # Create a SHAP text masker using the tokenizer to determine which tokens can be hidden during explanation
     masker = shap.maskers.Text(tokenizer)
+
+    # Create the SHAP explainer that tests masked versions of the text using the model's prediction function
     explainer = shap.Explainer(model_predict, masker)
+
+    # Store the explainer in cache so it does not need to be created again for every request
     model_cache["shap_explainer"] = explainer
+
+    # Return the initialized SHAP explainer
     return explainer
 
 
 def get_fusion(fusion_dir: str):
+    # Find the correct folder containing the saved Fusion Model files
     fusion_dir = resolve_path(fusion_dir)
+
+    # If the Fusion Model was already loaded from this folder,
+    # return it from memory instead of loading it again
     if (
         model_cache["fusion_artifacts"] is not None
         and model_cache["fusion_dir"] == fusion_dir
     ):
         return model_cache["fusion_artifacts"]
 
+    # Load all saved Fusion Model components from the folder
+    # e.g. TF-IDF vectorizer, scaler, Logistic Regression and SVM
     artifacts = fusion_inference.load_fusion_artifacts(fusion_dir)
+
+    # If the required model files cannot be found, return a 404 error
     if artifacts is None:
         raise HTTPException(
             status_code=404,
@@ -181,33 +210,44 @@ def get_fusion(fusion_dir: str):
             ),
         )
 
+    # Save the loaded artifacts in memory so they can be reused
     model_cache["fusion_artifacts"] = artifacts
     model_cache["fusion_dir"] = fusion_dir
+
+    # Return the loaded Fusion Model components
     return artifacts
 
 
 from pydantic import BaseModel, ConfigDict
 
+# Request format for predicting a manually entered review
 class PredictRequest(BaseModel):
+    # Allow field names such as model_choice/model_dir without Pydantic namespace warnings
     model_config = ConfigDict(protected_namespaces=())
-
+    # Review text entered by the user
     text: str
-    model_choice: str = "DistilBERT (Transformer)"  # or "Fusion - Logistic Regression", "Fusion - Linear SVM"
-    model_dir: Optional[str] = DEFAULT_MODEL_DIR
-    fusion_dir: Optional[str] = DEFAULT_FUSION_DIR
-
-
-class ScrapeRequest(BaseModel):
-    model_config = ConfigDict(protected_namespaces=())
-
-    url: str
+    # Model selected for prediction; DistilBERT is the default
     model_choice: str = "DistilBERT (Transformer)"
-    max_reviews: Optional[int] = 12
+    # Location of the saved DistilBERT model
     model_dir: Optional[str] = DEFAULT_MODEL_DIR
+    # Location of the saved Fusion Model artifacts
     fusion_dir: Optional[str] = DEFAULT_FUSION_DIR
 
 
-
+# Request format for scraping reviews from a product URL
+class ScrapeRequest(BaseModel):
+    # Allow field names such as model_choice/model_dir without Pydantic namespace warnings
+    model_config = ConfigDict(protected_namespaces=())
+    # Product URL from which reviews will be scraped
+    url: str
+    # Model used to classify the scraped reviews
+    model_choice: str = "DistilBERT (Transformer)"
+    # Maximum number of reviews to scrape; default is 12
+    max_reviews: Optional[int] = 12
+    # Location of the saved DistilBERT model
+    model_dir: Optional[str] = DEFAULT_MODEL_DIR
+    # Location of the saved Fusion Model artifacts
+    fusion_dir: Optional[str] = DEFAULT_FUSION_DIR
 
 # ============================================================
 # ENDPOINTS
@@ -234,7 +274,7 @@ def get_stats():
             {"value": "40,405", "label": "reviews analyzed"},
             {"value": "10", "label": "product categories"},
             {"value": "4", "label": "modeling approaches tested"},
-            {"value": "98.3%", "label": "best model accuracy"},
+            {"value": "98.05%", "label": "best model accuracy"},
         ]
     }
 
@@ -417,30 +457,35 @@ def get_case_notes():
             },
         ],
     }
-
-
 @app.post("/api/predict")
 def predict_review(req: PredictRequest):
+    # Get review text and remove leading/trailing spaces
     text = req.text.strip()
+
+    # Reject empty reviews or reviews with fewer than 3 words
     if not text or len(text.split()) < 3:
         raise HTTPException(
             status_code=400,
             detail="Review text must be at least 3 words long.",
         )
 
+    # Check whether a Fusion model is selected
     is_fusion = req.model_choice.startswith("Fusion")
-    fusion_which = (
-        "logreg" if "Logistic" in req.model_choice else "svm"
-    )
+
+    # Select Logistic Regression or Linear SVM for Fusion prediction
+    fusion_which = "logreg" if "Logistic" in req.model_choice else "svm"
 
     if is_fusion:
+        # Load cached/saved Fusion model components
         fusion_dir = req.fusion_dir or DEFAULT_FUSION_DIR
         artifacts = get_fusion(fusion_dir)
+
+        # Predict REAL/FAKE using the selected Fusion classifier
         result = fusion_inference.predict_fusion(
             text, artifacts, which=fusion_which
         )
 
-        # Generate feature explanation
+        # Calculate feature contributions for the Fusion prediction
         explain_df = fusion_inference.explain_fusion(
             text, artifacts, which=fusion_which
         )
@@ -449,16 +494,21 @@ def predict_review(req: PredictRequest):
         top_influential = []
 
         if not explain_df.empty:
+            # Positive values push toward FAKE
             pos = (
                 explain_df[explain_df["shap_value"] > 0]
                 .sort_values("shap_value", ascending=False)
                 .head(10)
             )
+
+            # Negative values push toward REAL
             neg = (
                 explain_df[explain_df["shap_value"] < 0]
                 .sort_values("shap_value", ascending=True)
                 .head(10)
             )
+
+            # Combine REAL-direction and FAKE-direction contributions
             subset = (
                 import_pandas_concat([neg, pos])
                 if not (pos.empty and neg.empty)
@@ -466,6 +516,7 @@ def predict_review(req: PredictRequest):
             )
             subset = subset.sort_values("shap_value")
 
+            # Prepare feature contributions for the frontend
             for _, row in subset.iterrows():
                 val = float(row["shap_value"])
                 contributions.append(
@@ -476,11 +527,13 @@ def predict_review(req: PredictRequest):
                     }
                 )
 
+            # Find the 10 strongest features regardless of direction
             top_df = (
                 explain_df.assign(abs_shap=lambda d: d["shap_value"].abs())
                 .sort_values("abs_shap", ascending=False)
                 .head(10)
             )
+
             for _, row in top_df.iterrows():
                 val = float(row["shap_value"])
                 top_influential.append(
@@ -491,12 +544,15 @@ def predict_review(req: PredictRequest):
                     }
                 )
 
+        # Add explanation note for calibrated Linear SVM
         note = (
-            "Linear SVM values are averaged across the model's calibration folds - a close approximation."
+            "Linear SVM values are averaged across the model's "
+            "calibration folds - a close approximation."
             if fusion_which == "svm"
             else None
         )
 
+        # Return Fusion prediction to React as JSON
         return {
             "label": result["label"],
             "confidence": round(result["confidence"], 6),
@@ -508,140 +564,199 @@ def predict_review(req: PredictRequest):
             "device": "CPU (Scikit-Learn)",
         }
 
-    else:
-        # DistilBERT Transformer
-        model_dir = req.model_dir or DEFAULT_MODEL_DIR
-        model, tokenizer, device = get_bert(model_dir)
+    # Load cached/saved DistilBERT model and tokenizer
+    model_dir = req.model_dir or DEFAULT_MODEL_DIR
+    model, tokenizer, device = get_bert(model_dir)
 
-        import torch
+    import torch
 
-        id2label = {REAL_CLASS_INDEX: "real", FAKE_CLASS_INDEX: "fake"}
+    # Map model class IDs to readable labels
+    id2label = {
+        REAL_CLASS_INDEX: "real",
+        FAKE_CLASS_INDEX: "fake",
+    }
 
-        with torch.no_grad():
-            enc = tokenizer(
-                text,
-                truncation=True,
-                padding="max_length",
-                max_length=256,
-                return_tensors="pt",
-            ).to(device)
-            enc = {k: v for k, v in enc.items() if k != "token_type_ids"}
+    # Run prediction without calculating gradients
+    with torch.no_grad():
+        # Convert review text into DistilBERT input tokens
+        enc = tokenizer(
+            text,
+            truncation=True,
+            padding="max_length",
+            max_length=256,
+            return_tensors="pt",
+        ).to(device)
 
-            logits = model(**enc).logits
-            probs = torch.softmax(logits, dim=-1)[0]
-            pred_id = int(torch.argmax(probs).item())
+        # DistilBERT does not require token_type_ids
+        enc = {k: v for k, v in enc.items() if k != "token_type_ids"}
 
-        prob_real = float(probs[REAL_CLASS_INDEX].item())
-        prob_fake = float(probs[FAKE_CLASS_INDEX].item())
-        label = id2label[pred_id]
-        confidence = float(probs[pred_id].item())
+        # Pass tokens through DistilBERT and get raw scores
+        logits = model(**enc).logits
 
-        contributions = []
-        top_influential = []
+        # Convert logits into REAL/FAKE probabilities
+        probs = torch.softmax(logits, dim=-1)[0]
 
-        # Attempt SHAP explanation
-        try:
-            explainer = get_shap_explainer(model_dir)
-            shap_values = explainer([text])
-            values = shap_values.values[0, :, FAKE_CLASS_INDEX]
-            tokens = shap_values.data[0]
+        # Select the class with the highest probability
+        pred_id = int(torch.argmax(probs).item())
 
-            raw_rows = []
-            for tok, val in zip(tokens, values):
-                tok = str(tok)
-                if not tok.strip() or tok in SPECIAL_TOKENS:
-                    continue
-                raw_rows.append({"token": tok, "shap_value": float(val)})
+    # Extract class probabilities and final prediction
+    prob_real = float(probs[REAL_CLASS_INDEX].item())
+    prob_fake = float(probs[FAKE_CLASS_INDEX].item())
+    label = id2label[pred_id]
+    confidence = float(probs[pred_id].item())
 
-            if raw_rows:
-                merged = []
-                for row in raw_rows:
-                    tok, val = row["token"], row["shap_value"]
-                    if tok.startswith("##") and merged:
-                        merged[-1]["display_token"] += tok[2:]
-                        merged[-1]["shap_value"] += val
-                    else:
-                        merged.append(
-                            {"display_token": tok.strip(), "shap_value": val}
-                        )
+    contributions = []
+    top_influential = []
 
-                import pandas as pd
+    # Generate token-level SHAP explanation
+    try:
+        # Load/create cached SHAP explainer
+        explainer = get_shap_explainer(model_dir)
 
-                shap_df = pd.DataFrame(merged)
+        # Mask different tokens and measure their influence on prediction
+        shap_values = explainer([text])
 
-                pos = (
-                    shap_df[shap_df["shap_value"] > 0]
-                    .sort_values("shap_value", ascending=False)
-                    .head(10)
-                )
-                neg = (
-                    shap_df[shap_df["shap_value"] < 0]
-                    .sort_values("shap_value", ascending=True)
-                    .head(10)
-                )
-                subset = pd.concat([neg, pos]).sort_values("shap_value")
+        # Get each token's contribution toward the FAKE class
+        values = shap_values.values[0, :, FAKE_CLASS_INDEX]
+        tokens = shap_values.data[0]
 
-                for _, row in subset.iterrows():
-                    val = float(row["shap_value"])
-                    contributions.append(
+        raw_rows = []
+
+        # Match each valid token with its SHAP value
+        for tok, val in zip(tokens, values):
+            tok = str(tok)
+
+            # Ignore empty and special tokens
+            if not tok.strip() or tok in SPECIAL_TOKENS:
+                continue
+
+            raw_rows.append(
+                {
+                    "token": tok,
+                    "shap_value": float(val),
+                }
+            )
+
+        if raw_rows:
+            merged = []
+
+            # Merge WordPiece sub-tokens into readable words
+            # Example: "un" + "##believable" → "unbelievable"
+            for row in raw_rows:
+                tok = row["token"]
+                val = row["shap_value"]
+
+                if tok.startswith("##") and merged:
+                    merged[-1]["display_token"] += tok[2:]
+                    merged[-1]["shap_value"] += val
+                else:
+                    merged.append(
                         {
-                            "display_token": str(row["display_token"]),
-                            "shap_value": round(val, 4),
-                            "direction": "FAKE" if val > 0 else "REAL",
+                            "display_token": tok.strip(),
+                            "shap_value": val,
                         }
                     )
 
-                top_df = (
-                    shap_df.assign(abs_shap=lambda d: d["shap_value"].abs())
-                    .sort_values("abs_shap", ascending=False)
-                    .head(10)
-                )
-                for _, row in top_df.iterrows():
-                    val = float(row["shap_value"])
-                    top_influential.append(
-                        {
-                            "token": str(row["display_token"]),
-                            "contribution": round(val, 4),
-                            "pushes_toward": "→ FAKE" if val > 0 else "→ REAL",
-                        }
-                    )
-        except Exception as e:
-            print(f"SHAP extraction note: {e}")
+            import pandas as pd
 
-        return {
-            "label": label,
-            "confidence": round(confidence, 6),
-            "prob_real": round(prob_real, 6),
-            "prob_fake": round(prob_fake, 6),
-            "contributions": contributions,
-            "top_influential": top_influential,
-            "method_note": "SHAP feature contribution values over DistilBERT transformer tokens.",
-            "device": device.upper(),
-        }
+            # Convert token contributions into a DataFrame
+            shap_df = pd.DataFrame(merged)
+
+            # Get 10 strongest tokens pushing toward FAKE
+            pos = (
+                shap_df[shap_df["shap_value"] > 0]
+                .sort_values("shap_value", ascending=False)
+                .head(10)
+            )
+
+            # Get 10 strongest tokens pushing toward REAL
+            neg = (
+                shap_df[shap_df["shap_value"] < 0]
+                .sort_values("shap_value", ascending=True)
+                .head(10)
+            )
+
+            # Combine REAL and FAKE contributions
+            subset = pd.concat([neg, pos]).sort_values("shap_value")
+
+            # Prepare SHAP contributions for the frontend
+            for _, row in subset.iterrows():
+                val = float(row["shap_value"])
+                contributions.append(
+                    {
+                        "display_token": str(row["display_token"]),
+                        "shap_value": round(val, 4),
+                        "direction": "FAKE" if val > 0 else "REAL",
+                    }
+                )
+
+            # Find the 10 most influential tokens regardless of direction
+            top_df = (
+                shap_df.assign(abs_shap=lambda d: d["shap_value"].abs())
+                .sort_values("abs_shap", ascending=False)
+                .head(10)
+            )
+
+            for _, row in top_df.iterrows():
+                val = float(row["shap_value"])
+                top_influential.append(
+                    {
+                        "token": str(row["display_token"]),
+                        "contribution": round(val, 4),
+                        "pushes_toward": "→ FAKE" if val > 0 else "→ REAL",
+                    }
+                )
+
+    # Prediction still works if SHAP explanation fails
+    except Exception as e:
+        print(f"SHAP extraction note: {e}")
+
+    # Return DistilBERT prediction and SHAP explanation to React
+    return {
+        "label": label,
+        "confidence": round(confidence, 6),
+        "prob_real": round(prob_real, 6),
+        "prob_fake": round(prob_fake, 6),
+        "contributions": contributions,
+        "top_influential": top_influential,
+        "method_note": (
+            "SHAP feature contribution values over DistilBERT transformer tokens."
+        ),
+        "device": device.upper(),
+    }
 
 
 def import_pandas_concat(objs):
+    # Combine multiple pandas DataFrames into one
     import pandas as pd
-
     return pd.concat(objs)
 
 
 @app.post("/api/scrape-and-predict")
 def scrape_and_predict(req: ScrapeRequest):
+    # Get product URL and remove extra spaces
     url = req.url.strip()
+
+    # Reject an empty URL
     if not url:
         raise HTTPException(status_code=400, detail="URL cannot be empty.")
 
     try:
+        # Scrape product information and reviews from the URL
         scraped_data = scraper.scrape_reviews_from_url(
-            url, max_reviews=req.max_reviews or 12
+            url,
+            max_reviews=req.max_reviews or 12,
         )
     except Exception as e:
         raise HTTPException(
-            status_code=400, detail=f"Failed to scrape URL: {e}"
+            status_code=400,
+            detail=f"Failed to scrape URL: {e}",
         )
 
+    # Extract scraped reviews
     scraped_reviews = scraped_data["reviews"]
+
+    # Return an error if no reviews were found
     if not scraped_reviews:
         raise HTTPException(
             status_code=422,
@@ -652,18 +767,25 @@ def scrape_and_predict(req: ScrapeRequest):
     real_count = 0
     fake_count = 0
 
+    # Predict each scraped review individually
     for item in scraped_reviews:
+        # Create a prediction request using the selected model
         predict_req = PredictRequest(
             text=item["text"],
             model_choice=req.model_choice,
             model_dir=req.model_dir,
             fusion_dir=req.fusion_dir,
         )
+
+        # Reuse the existing prediction function
         res = predict_review(predict_req)
+
+        # Add original review information to the result
         res["title"] = item["title"]
         res["rating"] = item["rating"]
         res["text"] = item["text"]
 
+        # Count REAL and FAKE predictions
         if res["label"] == "real":
             real_count += 1
         else:
@@ -671,9 +793,13 @@ def scrape_and_predict(req: ScrapeRequest):
 
         results.append(res)
 
+    # Calculate total analyzed reviews
     total = len(results)
+
+    # Trust score = percentage of analyzed reviews predicted as REAL
     trust_score = round((real_count / total) * 100, 1) if total > 0 else 0.0
 
+    # Return product-level and individual review results to React
     return {
         "product_title": scraped_data["product_title"],
         "url": url,
@@ -685,14 +811,26 @@ def scrape_and_predict(req: ScrapeRequest):
     }
 
 
-
-# Mount static React build if it exists
+# Locate the production React/Vite build folder
 DIST_DIR = ROOT_DIR / "frontend" / "dist"
+
+# Serve the built React frontend through FastAPI if it exists
 if DIST_DIR.exists():
-    app.mount("/", StaticFiles(directory=str(DIST_DIR), html=True), name="static")
+    app.mount(
+        "/",
+        StaticFiles(directory=str(DIST_DIR), html=True),
+        name="static",
+    )
 
 
+# Start the FastAPI server only when this file is executed directly
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("api:app", host="127.0.0.1", port=8000, reload=True)
+    # Run backend on localhost:8000 and reload after code changes
+    uvicorn.run(
+        "api:app",
+        host="127.0.0.1",
+        port=8000,
+        reload=True,
+    )

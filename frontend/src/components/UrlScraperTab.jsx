@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend
 } from 'recharts';
-import { Link2, Loader2, ShieldCheck, AlertTriangle, ChevronDown, ChevronUp, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Link2, Loader2, ShieldCheck, AlertTriangle, ChevronDown, ChevronUp, Sparkles, CheckCircle2, Construction } from 'lucide-react';
 import { formatPercent } from '../utils/format';
 
 export default function UrlScraperTab() {
@@ -57,6 +57,24 @@ export default function UrlScraperTab() {
 
   return (
     <div className="space-y-8 animate-fadeIn">
+      {/* Under Construction Banner */}
+      <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-4 sm:p-5 flex items-start sm:items-center gap-3.5 text-amber-900 shadow-2xs">
+        <div className="p-2.5 bg-amber-100/90 rounded-lg text-amber-700 shrink-0 mt-0.5 sm:mt-0">
+          <Construction className="w-5 h-5" />
+        </div>
+        <div className="flex-1 space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-sm text-amber-900 tracking-tight">Under Construction</span>
+            <span className="text-[10px] font-mono uppercase bg-amber-200/80 border border-amber-300 text-amber-800 px-2 py-0.5 rounded font-semibold tracking-wider">
+              Prototype / Experimental Feature
+            </span>
+          </div>
+          <p className="text-xs text-amber-800 leading-relaxed">
+            The automated URL scraper is currently under construction and active development. E-commerce sites often utilize anti-bot protection and CAPTCHAs, which may cause live scraping requests to be blocked.
+          </p>
+        </div>
+      </div>
+
       {/* Header */}
       <div>
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold mb-2">

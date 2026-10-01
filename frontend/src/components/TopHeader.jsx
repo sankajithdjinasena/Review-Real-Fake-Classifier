@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, ShieldCheck, Activity, Search, Database, Cpu, CheckCircle2, FileText, Link2, Sparkles } from 'lucide-react';
+import { Menu, ShieldCheck, Activity, Search, Database, Cpu, CheckCircle2, FileText, Link2, Sparkles, Construction } from 'lucide-react';
 
 export default function TopHeader({ activeTab, setIsMobileOpen, health }) {
   const metaMap = {
@@ -62,6 +62,12 @@ export default function TopHeader({ activeTab, setIsMobileOpen, health }) {
                 <ActiveIcon className="w-3.5 h-3.5 text-indigo-600" />
                 {activeTab}
               </span>
+              {activeTab === 'UrlScraper' && (
+                <span className="inline-flex items-center gap-1 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-mono px-2 py-0.5 rounded-full font-semibold">
+                  <Construction className="w-3 h-3 text-amber-600" />
+                  Under Construction
+                </span>
+              )}
               <span className="hidden sm:inline text-xs text-slate-400">•</span>
               <span className="hidden sm:inline text-xs font-mono text-slate-500">
                 DS4105 CAPSTONE

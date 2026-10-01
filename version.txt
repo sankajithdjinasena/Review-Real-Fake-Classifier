@@ -1,0 +1,49 @@
+================================================================================
+Review Real vs Fake Classifier - Environment & Dependency Versions
+DS4105 - Capstone Project in Data Science II
+================================================================================
+
+1. RUNTIME & SYSTEM
+--------------------------------------------------------------------------------
+Python:                     3.11.9
+Node.js:                    v24.14.1
+
+2. CORE MACHINE LEARNING & NLP
+--------------------------------------------------------------------------------
+torch:                      2.9.1
+torchvision:                0.24.1
+transformers:               5.10.1
+datasets:                   5.0.1
+sentence-transformers:      5.7.0
+scikit-learn:               1.8.0
+shap:                       0.51.0
+numpy:                      2.4.4
+pandas:                     2.3.3
+scipy:                      1.17.0
+nltk:                       3.9.2
+
+3. BACKEND & WEB API
+--------------------------------------------------------------------------------
+fastapi:                    0.141.1
+uvicorn:                    0.52.3
+pydantic:                   2.13.4
+pydantic-settings:          2.15.0
+python-multipart:           0.0.32
+
+4. WEB SCRAPING & DATA VISUALIZATION
+--------------------------------------------------------------------------------
+beautifulsoup4:             4.15.0
+requests:                   2.34.2
+urllib3:                    2.7.0
+matplotlib:                 3.10.8
+seaborn:                    0.13.2
+
+5. FRONTEND DASHBOARD
+--------------------------------------------------------------------------------
+react:                      ^18.3.1
+react-dom:                  ^18.3.1
+vite:                       ^6.0.0
+tailwindcss:                ^4.0.0
+recharts:                   ^3.10.1
+lucide-react:               ^1.33.0
+================================================================================

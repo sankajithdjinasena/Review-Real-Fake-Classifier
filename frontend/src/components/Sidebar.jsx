@@ -32,7 +32,7 @@ export default function Sidebar({
     { id: 'Verdict', label: 'The Verdict', icon: CheckCircle2, section: 'Analytics' },
     { id: 'CaseNotes', label: 'Case Notes', icon: FileText, section: 'Analytics' },
     { id: 'LiveInterrogation', label: 'Live Interrogation', icon: Search, section: 'Tools' },
-    { id: 'UrlScraper', label: 'URL Scraper', icon: Link2, section: 'Tools' },
+    { id: 'UrlScraper', label: 'URL Scraper', icon: Link2, section: 'Tools', badge: 'WIP' },
   ];
 
   const renderNavContent = (collapsed = false) => (
@@ -93,7 +93,16 @@ export default function Sidebar({
                     isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'
                   }`}
                 />
-                {!collapsed && <span className="truncate">{item.label}</span>}
+                {!collapsed && (
+                  <span className="flex-1 flex items-center justify-between truncate">
+                    <span className="truncate">{item.label}</span>
+                    {item.badge && (
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold border border-amber-200">
+                        {item.badge}
+                      </span>
+                    )}
+                  </span>
+                )}
               </button>
             );
           })}
